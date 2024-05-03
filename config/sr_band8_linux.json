@@ -1,0 +1,85 @@
+{
+  "name": "MS2PAN_WV3_pancollection",
+  "info": "首次尝试着色任务，ms2pan的首次尝试。256*256*4->256*256*1",
+  "phase": "train",
+  "choice": "ms2pan",
+  "distributed": true,
+  // train or val
+  "gpu_ids": [
+    3
+  ],
+  "path": {
+    //set the path
+    "log": "logs",
+    "tb_logger": "tb_logger",
+    "results": "results",
+    "checkpoint": "checkpoint",
+    "pan2ms": "null",
+    "ms2pan": null
+    // "resume_state": "experiments/distributed_high_sr_ffhq_210901_121212/checkpoint/I830000_E32" //pretrain model or training state
+  },
+  "datasets": {
+    "train": {
+      "dataroot": "/data/qlt/pancollection/training_data/train_wv3_data.h5",
+      "batch_size": 32,
+      "num_workers": 8,
+      "use_shuffle": true,
+      "data_len": -1
+    },
+    "val": {
+      "dataroot": "/data/qlt/pancollection/validation_data/valid_wv3_data.h5",
+      "data_len": 100
+    }
+  },
+  "model": {
+    "which_model_G": "easy",
+    // use the ddpm or sr3 network structure
+    "finetune_norm": false,
+    "init_type": "orthogonal",
+    "unet": {
+      "in_channel": 8,
+      "out_channel": 8,
+      "inner_channel": 32,
+      "norm_groups": 32,
+      "channel_multiplier": [
+        32,
+        64,
+        128,
+        256
+      ],
+      "attn_res": [
+      ],
+      "res_blocks": 0,
+      "dropout": 0,
+      "num_head_channels": 32
+    },
+    "beta_schedule": {
+      // use munual beta_schedule for acceleration
+      "train": {
+        "schedule": "cosine",
+        "n_timestep": 1000
+      },
+      "val": {
+        "schedule": "cosine",
+        "n_timestep": 1000
+      }
+    },
+    "diffusion": {
+      "image_size": 256,
+      "conditional": true,
+      "loss_type": "l2"
+    }
+  },
+  "train": {
+    "n_epochs": 1000,
+    "val_freq": 100,
+    "save_checkpoint_freq": 100,
+    "print_freq": 1,
+    "optimizer": {
+      "lr": 3e-4
+    }
+  }
+}
+
+
+

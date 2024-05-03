@@ -1,0 +1,99 @@
+{
+  "name": "ddpm_reduced_wv2_on_wv3",
+  "info": "baseline_usingcvpr_Loss，我们已经确定了qnr_loss还是不错的，是个不错的技巧",
+  "phase": "val",
+  // for diffusion model
+  "fusion_phase": "train",
+  // train or val
+  "gpu_ids": [
+    1
+  ],
+  "path": {
+    //set the path
+    "log": "logs",
+    "tb_logger": "tb_logger",
+    "results": "results",
+    "checkpoint": "checkpoint",
+    "resume_state": null,
+    "pan2ms": "experiments/PAN2MS_WV3_230811_212548/checkpoint/I1472000_E500",
+    "ms2pan": "experiments/MS2PAN_WV3_230811_212134/checkpoint/I1177600_E400"
+    // "resume_state": "experiments/distributed_high_sr_ffhq_210901_121212/checkpoint/I830000_E32" //pretrain model or training state
+  },
+  "datasets": {
+    "train": {
+      "dataroot": "/data/qlt/h5/training_data/train_wv2_data.h5",
+      "batch_size": 32,
+      "num_workers": 8,
+      "use_shuffle": true,
+      "data_len": -1
+    },
+    "val": {
+      "dataroot": "/data/qlt/h5/test_data/WV2/test_wv2_data_RR.h5",
+      "data_len": -1
+    },
+    "test": {
+      "dataroot": "/data/qlt/h5/test_data/WV2/test_wv2_data_RR.h5",
+      "data_len": -1
+    }
+  },
+  "model": {
+    "which_model_G": "easy",
+    // use the ddpm or sr3 network structure
+    "finetune_norm": false,
+    "init_type": "orthogonal",
+    "unet": {
+      "in_channel": 8,
+      "channel_multiplier": [
+        //input channel
+        32,
+        64,
+        128,
+        256
+      ]
+    },
+    "beta_schedule": {
+      // use munual beta_schedule for acceleration
+      "train": {
+        "schedule": "cosine",
+        "n_timestep": 1000
+      },
+      "val": {
+        "schedule": "cosine",
+        "n_timestep": 1000
+      }
+    },
+    "diffusion": {
+      "image_size": 256,
+      "conditional": true,
+      "loss_type": "l1"
+    }
+  },
+  "model_fu": {
+    "inner_channel": 32,
+    "channel_multiplier": [
+      //input channel
+      32,
+      64,
+      128,
+      256
+    ],
+    "spectral_num": 8,
+    "feat_type": "enc",
+    //Options: 'enc'/'dec'
+    "t": [
+      50
+    ]
+  },
+  "train": {
+    "n_epochs": 200,
+    "val_freq": 20,
+    "save_checkpoint_freq": 20,
+    "print_freq": 1,
+    "optimizer": {
+      "lr": 3e-4
+    }
+  }
+}
+
+
+
