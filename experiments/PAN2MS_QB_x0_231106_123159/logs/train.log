@@ -1,0 +1,139 @@
+23-11-06 12:31:59.128 - INFO: 首次尝试着色任务，ms2pan的首次尝试。256*256*4->256*256*1
+23-11-06 12:31:59.128 - INFO:   name: PAN2MS_QB_x0
+  info: 首次尝试着色任务，ms2pan的首次尝试。256*256*4->256*256*1
+  phase: val
+  choice: ms2pan
+  distributed: False
+  gpu_ids: [2]
+  path:[
+    log: experiments/PAN2MS_QB_x0_231106_123159/logs
+    tb_logger: experiments/PAN2MS_QB_x0_231106_123159/tb_logger
+    results: experiments/PAN2MS_QB_x0_231106_123159/results
+    checkpoint: experiments/PAN2MS_QB_x0_231106_123159/checkpoint
+    ms2pan: experiments/MS2PAN_QB_2_230715_023232/checkpoint/I2777600_E400
+    pan2ms: experiments/PAN2MS_QB_2_230715_015503/checkpoint/I6944000_E1000
+    experiments_root: experiments/PAN2MS_QB_x0_231106_123159
+  ]
+  datasets:[
+    train:[
+      dataroot: /data/qlt/h5/full/training_data/train_qb_data.h5
+      batch_size: 32
+      num_workers: 8
+      use_shuffle: True
+      data_len: -1
+    ]
+    val:[
+      dataroot: /data/qlt/h5/test_data/QB/test_qb_data_RR.h5
+      data_len: -1
+    ]
+  ]
+  model:[
+    which_model_G: easy
+    finetune_norm: False
+    init_type: orthogonal
+    unet:[
+      in_channel: 4
+      out_channel: 4
+      inner_channel: 32
+      norm_groups: 32
+      channel_multiplier: [32, 64, 128, 256]
+      attn_res: []
+      res_blocks: 0
+      dropout: 0
+      num_head_channels: 32
+    ]
+    beta_schedule:[
+      train:[
+        schedule: cosine
+        n_timestep: 1000
+      ]
+      val:[
+        schedule: cosine
+        n_timestep: 1000
+      ]
+    ]
+    diffusion:[
+      image_size: 256
+      conditional: True
+      loss_type: l2
+    ]
+  ]
+  train:[
+    n_epochs: 1000
+    val_freq: 100
+    save_checkpoint_freq: 100
+    print_freq: 100
+    optimizer:[
+      lr: 0.0003
+    ]
+  ]
+  log_eval: False
+
+23-11-06 12:31:59.662 - INFO: Initial Dataset Finished
+23-11-06 12:32:01.817 - INFO: Loading pretrained model for G [experiments/MS2PAN_QB_2_230715_023232/checkpoint/I2777600_E400] ...
+23-11-06 12:32:01.826 - INFO: Network G structure: GaussianDiffusion, with parameters: 1,086,318
+23-11-06 12:32:01.827 - INFO: GaussianDiffusion(
+  (denoise_fn): Multi_branch_Unet(
+    (embed): Sequential(
+      (0): Linear(in_features=32, out_features=256, bias=True)
+    )
+    (conv1): Conv2d(5, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (res3): ResblockDownOne(
+      (conv20): Conv2d(32, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (dense1): Dense(
+        (dense): Linear(in_features=256, out_features=32, bias=True)
+      )
+      (groupnorm1): GroupNorm(4, 32, eps=1e-05, affine=True)
+      (act): SiLU()
+    )
+    (down1): ResblockDownOne(
+      (conv20): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (dense1): Dense(
+        (dense): Linear(in_features=256, out_features=64, bias=True)
+      )
+      (groupnorm1): GroupNorm(32, 64, eps=1e-05, affine=True)
+      (act): SiLU()
+    )
+    (down2): ResblockDownOne(
+      (conv20): Conv2d(128, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (dense1): Dense(
+        (dense): Linear(in_features=256, out_features=128, bias=True)
+      )
+      (groupnorm1): GroupNorm(32, 128, eps=1e-05, affine=True)
+      (act): SiLU()
+    )
+    (up1): ResblockUpOne(
+      (conv20): ConvTranspose2d(256, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), output_padding=(1, 1))
+      (dense1): Dense(
+        (dense): Linear(in_features=256, out_features=256, bias=True)
+      )
+      (groupnorm1): GroupNorm(32, 256, eps=1e-05, affine=True)
+      (act): SiLU()
+    )
+    (dense2): Dense(
+      (dense): Linear(in_features=256, out_features=128, bias=True)
+    )
+    (groupnorm2): GroupNorm(32, 128, eps=1e-05, affine=True)
+    (up2): ConvTranspose2d(256, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), output_padding=(1, 1))
+    (dense3): Dense(
+      (dense): Linear(in_features=256, out_features=64, bias=True)
+    )
+    (groupnorm3): GroupNorm(32, 64, eps=1e-05, affine=True)
+    (up3): ConvTranspose2d(128, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), output_padding=(1, 1))
+    (dense4): Dense(
+      (dense): Linear(in_features=256, out_features=32, bias=True)
+    )
+    (groupnorm4): GroupNorm(4, 32, eps=1e-05, affine=True)
+    (final1): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (dense5): Dense(
+      (dense): Linear(in_features=256, out_features=32, bias=True)
+    )
+    (groupnorm5): GroupNorm(4, 32, eps=1e-05, affine=True)
+    (final2): Conv2d(37, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (act): SiLU()
+  )
+  (loss_func): MSELoss()
+)
+23-11-06 12:32:01.827 - INFO: Model [DDPM] is created.
+23-11-06 12:32:01.827 - INFO: Initial Model Finished
+23-11-06 12:32:01.828 - INFO: Begin Model Evaluation.

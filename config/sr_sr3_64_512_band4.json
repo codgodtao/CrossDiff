@@ -1,0 +1,89 @@
+{
+  "name": "draw_image_qb_ms2pan",
+  "info": "首次尝试着色任务，ms2pan的首次尝试。256*256*4->256*256*1",
+  "phase": "val",
+  "choice": "ms2pan",
+  // train or val
+  "gpu_ids": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "path": {
+    //set the path
+    "log": "logs",
+    "tb_logger": "tb_logger",
+    "results": "results",
+    "checkpoint": "checkpoint",
+    "ms2pan": "D:\\遥感图像融合\\paperwithcode\\Image-Super-Resolution-via-Iterative-Refinement-master\\experiments\\MS2PAN_QB_230313_143040\\checkpoint\\I4860800_E700"
+    // "resume_state": "experiments/distributed_high_sr_ffhq_210901_121212/checkpoint/I830000_E32" //pretrain model or training state
+  },
+  "datasets": {
+    "train": {
+      "dataroot": "E:\\data\\train_qb_data.h5",
+      "batch_size": 32,
+      "num_workers": 8,
+      "use_shuffle": true,
+      "data_len": -1
+    },
+    "val": {
+      "dataroot": "E:\\UDL\\Data\\pansharpening\\test_data\\QB\\test_qb_data_RR.h5",
+      "data_len": -1
+    }
+  },
+  "model": {
+    "which_model_G": "easy",
+    // use the ddpm or sr3 network structure
+    "finetune_norm": false,
+    "init_type": "orthogonal",
+    "unet": {
+      "in_channel": 8,
+      "out_channel": 4,
+      "inner_channel": 32,
+      "norm_groups": 32,
+      "channel_multiplier": [
+        32,
+        64,
+        128,
+        256
+      ],
+      "attn_res": [
+      ],
+      "res_blocks": 0,
+      "dropout": 0,
+      "num_head_channels": 32
+    },
+    "beta_schedule": {
+      // use munual beta_schedule for acceleration
+      "train": {
+        "schedule": "cosine",
+        "n_timestep": 1000
+      },
+      "val": {
+        "schedule": "cosine",
+        "n_timestep": 1000
+      }
+    },
+    "diffusion": {
+      "image_size": 256,
+      "conditional": true,
+      "loss_type": "l2"
+    }
+  },
+  "model_fu": {
+    "spectral_num": 4
+  },
+  "train": {
+    "n_epochs": 1000,
+    "val_freq": 100,
+    "save_checkpoint_freq": 100,
+    "print_freq": 1,
+    "optimizer": {
+      "lr": 3e-4
+    }
+  }
+}
+
+
+

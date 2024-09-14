@@ -1,0 +1,93 @@
+{
+  "name": "ddpm_fusion_qb_jointtrain",
+  "info": "最新的上下采样方案；之前的结果不错，直接拿来继续训练100个epoch看看结果",
+  "phase": "train",
+  // for diffusion model
+  "fusion_phase": "train",
+  // train or val
+  "gpu_ids": [
+    3,2,1,0
+  ],
+  "path": {
+    //set the path
+    "log": "logs",
+    "tb_logger": "tb_logger",
+    "results": "results",
+    "checkpoint": "checkpoint",
+    "resume_state": null,
+    "ms2pan": "experiments/MS2PAN_QB_2_230715_023232/checkpoint/I2777600_E400",
+    "pan2ms": "experiments/PAN2MS_QB_2_230715_015503/checkpoint/I6944000_E1000"
+   },
+  "datasets": {
+    "train": {
+      "dataroot": "/data/qlt/h5/full/training_data/train_qb_data.h5",
+      "batch_size": 32,
+      "num_workers": 8,
+      "use_shuffle": true,
+      "data_len": -1
+    },
+    "val": {
+      "dataroot": "/data/qlt/h5/test_data/QB/test_qb_data_FR.h5",
+      "data_len": -1
+    }
+  },
+  "model": {
+    "which_model_G": "easy",
+    "finetune_norm": false,
+    "init_type": "orthogonal",
+    "unet": {
+      "in_channel": 4,
+      "channel_multiplier": [
+        //input channel
+        32,
+        64,
+        128,
+        256
+      ]
+    },
+    "beta_schedule": {
+      // use munual beta_schedule for acceleration
+      "train": {
+        "schedule": "cosine",
+        "n_timestep": 1000
+      },
+      "val": {
+        "schedule": "cosine",
+        "n_timestep": 1000
+      }
+    },
+    "diffusion": {
+      "image_size": 256,
+      "conditional": true,
+      "loss_type": "l1"
+    }
+  },
+  "model_fu": {
+    "inner_channel": 32,
+    "channel_multiplier": [
+      //input channel
+      32,
+      64,
+      128,
+      256
+    ],
+    "spectral_num": 4,
+    "feat_type": "enc",
+    //Options: 'enc'/'dec'
+    "t": [
+      50
+    ]
+  },
+  "train": {
+    "n_epochs": 50,
+    "val_freq": 5,
+    "save_checkpoint_freq": 5,
+    "print_freq": 1,
+    "optimizer": {
+      "lr": 3e-4
+    }
+  }
+}
+
+
+

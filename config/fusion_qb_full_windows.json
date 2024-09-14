@@ -1,0 +1,100 @@
+{
+  "name": "ddpm_fusion_qb_full_randinit",
+  "info": "baseline_usingcvpr_Loss，我们已经确定了qnr_loss还是不错的，是个不错的技巧",
+  "phase": "val",
+  // for diffusion model
+  "fusion_phase": "val",
+  // train or val
+  "gpu_ids": [
+  0
+  ],
+  "path": {
+    //set the path
+    "log": "logs",
+    "tb_logger": "tb_logger",
+    "results": "results",
+    "checkpoint": "checkpoint",
+    "resume_state": null,
+    "pan2ms": "D:\\遥感图像融合\\paperwithcode\\Image-Super-Resolution-via-Iterative-Refinement-master\\experiments\\PAN2MS_QB_230314_121358\\checkpoint\\I4166400_E600",
+    "ms2pan": "D:\\遥感图像融合\\paperwithcode\\Image-Super-Resolution-via-Iterative-Refinement-master\\experiments\\MS2PAN_QB_230313_143040\\checkpoint\\I4860800_E700"
+
+    // "resume_state": "experiments/distributed_high_sr_ffhq_210901_121212/checkpoint/I830000_E32" //pretrain model or training state
+  },
+  "datasets": {
+    "train": {
+      "dataroot": "/data/qlt/h5/full/training_data/train_qb_data.h5",
+      "batch_size": 32,
+      "num_workers": 8,
+      "use_shuffle": true,
+      "data_len": -1
+    },
+    "val": {
+      "dataroot": "/data/qlt/h5/test_data/QB/test_qb_data_FR.h5",
+      "data_len": -1
+    },
+    "test": {
+      "dataroot": "E:\\UDL\\Data\\pansharpening\\test_data\\QB\\test_qb_data_FR.h5",
+      "data_len": -1
+    }
+  },
+  "model": {
+    "which_model_G": "easy",
+    // use the ddpm or sr3 network structure
+    "finetune_norm": false,
+    "init_type": "orthogonal",
+    "unet": {
+      "in_channel": 4,
+      "channel_multiplier": [
+        //input channel
+        32,
+        64,
+        128,
+        256
+      ]
+    },
+    "beta_schedule": {
+      // use munual beta_schedule for acceleration
+      "train": {
+        "schedule": "cosine",
+        "n_timestep": 1000
+      },
+      "val": {
+        "schedule": "cosine",
+        "n_timestep": 1000
+      }
+    },
+    "diffusion": {
+      "image_size": 256,
+      "conditional": true,
+      "loss_type": "l1"
+    }
+  },
+  "model_fu": {
+    "inner_channel": 32,
+    "channel_multiplier": [
+      //input channel
+      32,
+      64,
+      128,
+      256
+    ],
+    "spectral_num": 4,
+    "feat_type": "enc",
+    //Options: 'enc'/'dec'
+    "t": [
+      50
+    ]
+  },
+  "train": {
+    "n_epochs": 100,
+    "val_freq": 5,
+    "save_checkpoint_freq": 5,
+    "print_freq": 1,
+    "optimizer": {
+      "lr": 3e-4
+    }
+  }
+}
+
+
+
